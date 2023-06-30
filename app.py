@@ -29,6 +29,13 @@ load_dotenv()
 # Define the named tuple structure
 Document = namedtuple('Document', ['page_content', 'metadata'])
 
+pinecone.init(
+    api_key=os.environ.get("PINECONE_API_KEY"),
+    environment=os.environ.get("PINECONE_ENVIRONMENT"),
+)
+
+INDEX_NAME = os.environ.get("PINECONE_INDEX_NAME")
+
 def read_text_file(url):
     response = requests.get(url)
     print(response.text)
@@ -154,10 +161,67 @@ def getanswer():
     
     return jsonify(json_response)
 
+@app.route("/productassiststoreembeddings", methods=['POST'])
+def storeEmbeddigsPinecone():
 
+    data = request.get_json()
 
+    print("API KEY: ", os.environ.get("OPENAI_API_KEY"))
 
+    # Retrieve values
+    file_url = data.get("file_url")
+    embedding_map = data.get("embedding_map")
 
+    try:
+        document = read_text_file(file_url)
+        text_splitter = CharacterTextSplitter(chunk_size = 1000, chunk_overlap = 0)
+        texts = text_splitter.split_documents(document)
+
+        embeddings = OpenAIEmbeddings(openai_api_key=os.environ.get("OPENAI_API_KEY"))
+
+        doc_store = Pinecone.from_texts([d.page_content for d in texts], embeddings, index_name=INDEX_NAME, namespace=embedding_map)
+
+        json_message = {"status": "success"}
+    except:
+        json_message = {"status": "failed"}
+
+    return jsonify(json_message)
+
+@app.route("/productassistgetdata", methods=['POST'])
+def responseFromPinecone():
+
+    data = request.get_json()
+
+    print("API KEY: ", os.environ.get("OPENAI_API_KEY"))
+
+    # Retrieve values
+    question = data.get("question")
+    file_url = data.get("file_url")
+    embedding_map = data.get("embedding_map")
+
+    try:
+        document = read_text_file(file_url)
+        text_splitter = CharacterTextSplitter(chunk_size = 1000, chunk_overlap = 0)
+        texts = text_splitter.split_documents(document)
+
+        embeddings = OpenAIEmbeddings(openai_api_key=os.environ.get("OPENAI_API_KEY"))
+
+        doc_store = Pinecone.from_existing_index(index_name=INDEX_NAME, embedding=embeddings, namespace=embedding_map)
+
+        query = question
+
+        llm = OpenAI(temperature=0, openai_api_key=os.environ.get("OPENAI_API_KEY"))
+        qa_chain = load_qa_chain(llm, chain_type="stuff")
+        docs = doc_store.similarity_search(query)
+        result = qa_chain.run(input_documents=docs, question=query)
+        print(result)
+
+        json_message = {"status": "success", "result": result, "source_documents": docs}
+
+    except:
+        json_message = {"status": "failed"}
+    
+    return jsonify(json_message)
 
 if __name__ == "__main__":
     app.run(debug=True)
