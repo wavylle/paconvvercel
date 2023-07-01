@@ -1,4 +1,3 @@
-
 # A very simple Flask Hello World app for you to get started with...
 
 from flask import Flask, jsonify
@@ -36,6 +35,7 @@ pinecone.init(
 
 INDEX_NAME = os.environ.get("PINECONE_INDEX_NAME")
 
+
 def read_text_file(url):
     response = requests.get(url)
     print(response.text)
@@ -55,9 +55,11 @@ def read_text_file(url):
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def hello_world():
     return 'Hello from Flask!'
+
 
 @app.route("/testpost", methods=['POST'])
 def testPost():
@@ -71,6 +73,7 @@ def testPost():
     time.sleep(35)
     return jsonify(json_response)
 
+
 @app.route('/get-data', methods=['POST'])
 def paconv():
     # Access the JSON payload
@@ -83,7 +86,7 @@ def paconv():
     file_url = data.get("file_url")
     pinecone_api_key = data.get("pinecone_api_key")
     pinecone_environment = data.get("pinecone_environment")
-    
+
     pinecone.init(
         api_key=pinecone_api_key,
         environment=pinecone_environment,
@@ -112,18 +115,17 @@ def paconv():
     if "result" in result:
         json_response = {"question": question, "file_url": file_url, "message": result["result"]}
     else:
-        json_response = {"question": question, "file_url": file_url, "message": "There's an error from our end. We are getting on it."}
+        json_response = {"question": question, "file_url": file_url,
+                         "message": "There's an error from our end. We are getting on it."}
 
     print("RESULT: ", result)
     print("RESULT TYPE: ", type(result))
-
 
     return jsonify(json_response)
 
 
 @app.route('/answer', methods=['POST'])
 def getanswer():
-
     data = request.get_json()
 
     print("API KEY: ", os.environ.get("OPENAI_API_KEY"))
@@ -133,37 +135,39 @@ def getanswer():
     file_url = data.get("file_url")
     pinecone_api_key = data.get("pinecone_api_key")
     pinecone_environment = data.get("pinecone_environment")
-    
+
     try:
 
         llm = OpenAI(openai_api_key=os.environ.get("OPENAI_API_KEY"))
-        
+
         text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=400,
-        chunk_overlap=0
+            chunk_size=400,
+            chunk_overlap=0
         )
 
         document = read_text_file(file_url)
 
         docs = text_splitter.split_documents(document)
-        chain = load_qa_chain(llm, chain_type="map_rerank", verbose=True, return_intermediate_steps = True)
+        chain = load_qa_chain(llm, chain_type="map_rerank", verbose=True, return_intermediate_steps=True)
 
         query = question
-        
+
         result = chain({"input_documents": docs, "question": query}, return_only_outputs=True)
 
         if "output_text" in result:
             json_response = {"question": question, "file_url": file_url, "message": result["output_text"]}
         else:
-            json_response = {"question": question, "file_url": file_url, "message": "There's an error from our end. We are getting on it."}
+            json_response = {"question": question, "file_url": file_url,
+                             "message": "There's an error from our end. We are getting on it."}
     except:
-        json_response = {"question": question, "file_url": file_url, "message": "There's an error from our end. We are getting on it."}
-    
+        json_response = {"question": question, "file_url": file_url,
+                         "message": "There's an error from our end. We are getting on it."}
+
     return jsonify(json_response)
+
 
 @app.route("/productassiststoreembeddings", methods=['POST'])
 def storeEmbeddigsPinecone():
-
     data = request.get_json()
 
     print("API KEY: ", os.environ.get("OPENAI_API_KEY"))
@@ -174,12 +178,13 @@ def storeEmbeddigsPinecone():
 
     try:
         document = read_text_file(file_url)
-        text_splitter = CharacterTextSplitter(chunk_size = 1000, chunk_overlap = 0)
+        text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
         texts = text_splitter.split_documents(document)
 
         embeddings = OpenAIEmbeddings(openai_api_key=os.environ.get("OPENAI_API_KEY"))
 
-        doc_store = Pinecone.from_texts([d.page_content for d in texts], embeddings, index_name=INDEX_NAME, namespace=embedding_map)
+        doc_store = Pinecone.from_texts([d.page_content for d in texts], embeddings, index_name=INDEX_NAME,
+                                        namespace=embedding_map)
 
         json_message = {"status": "success"}
     except:
@@ -187,9 +192,9 @@ def storeEmbeddigsPinecone():
 
     return jsonify(json_message)
 
+
 @app.route("/productassistgetdata", methods=['POST'])
 def responseFromPinecone():
-
     data = request.get_json()
 
     print("API KEY: ", os.environ.get("OPENAI_API_KEY"))
@@ -201,7 +206,7 @@ def responseFromPinecone():
 
     try:
         document = read_text_file(file_url)
-        text_splitter = CharacterTextSplitter(chunk_size = 1000, chunk_overlap = 0)
+        text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
         texts = text_splitter.split_documents(document)
 
         embeddings = OpenAIEmbeddings(openai_api_key=os.environ.get("OPENAI_API_KEY"))
@@ -214,14 +219,21 @@ def responseFromPinecone():
         qa_chain = load_qa_chain(llm, chain_type="stuff")
         docs = doc_store.similarity_search(query)
         result = qa_chain.run(input_documents=docs, question=query)
-        print(result)
 
-        json_message = {"status": "success", "result": result}
+        doc_dict = []
+
+        for e, x in enumerate(docs):
+            doc_dict.append({"page_content": x.page_content, "metadata": x.metadata})
+
+        print("Doc Dict: ", doc_dict)
+
+        json_message = {"status": "success", "result": result, "docs": doc_dict}
 
     except:
         json_message = {"status": "failed"}
-    
+
     return jsonify(json_message)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
