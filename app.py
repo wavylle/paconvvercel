@@ -216,7 +216,7 @@ def responseFromPinecone():
         result = qa_chain.run(input_documents=docs, question=query)
         print(result)
 
-        json_message = {"status": "success", "result": result, "source_documents": docs}
+        json_message = {"status": "success", "result": result}
 
     except:
         json_message = {"status": "failed"}
