@@ -38,7 +38,6 @@ INDEX_NAME = os.environ.get("PINECONE_INDEX_NAME")
 
 def read_text_file(url):
     response = requests.get(url)
-    print(response.text)
     if response.status_code == 200:
         # Extract the content as a single string
         content = response.text.strip()
