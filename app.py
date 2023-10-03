@@ -175,29 +175,29 @@ def storeEmbeddigsPinecone():
     file_url = data.get("file_url")
     embedding_map = data.get("embedding_map")
 
-    try:
-        document = read_text_file(file_url)
-        response = requests.get(file_url)
-        if response.status_code == 200:
-            # Extract the content as a single string
-            content = response.text.strip()
-    
-            content = content.replace('\r', '')
-        if "\n\n" in content:
-            text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0, separators=["\n\n"])
-        else:
-            text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-        # text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-        texts = text_splitter.split_documents(document)
+    # try:
+    document = read_text_file(file_url)
+    response = requests.get(file_url)
+    if response.status_code == 200:
+        # Extract the content as a single string
+        content = response.text.strip()
 
-        embeddings = OpenAIEmbeddings(openai_api_key=os.environ.get("OPENAI_API_KEY"))
+        content = content.replace('\r', '')
+    if "\n\n" in content:
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0, separators=["\n\n"])
+    else:
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+    # text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+    texts = text_splitter.split_documents(document)
 
-        doc_store = Pinecone.from_texts([d.page_content for d in texts], embeddings, index_name=INDEX_NAME,
-                                        namespace=embedding_map)
+    embeddings = OpenAIEmbeddings(openai_api_key=os.environ.get("OPENAI_API_KEY"))
 
-        json_message = {"status": "success"}
-    except Exception as e:
-        json_message = {"status": "failed"}
+    doc_store = Pinecone.from_texts([d.page_content for d in texts], embeddings, index_name=INDEX_NAME,
+                                    namespace=embedding_map)
+
+    json_message = {"status": "success"}
+    # except Exception as e:
+    #     json_message = {"status": "failed"}
 
     return jsonify(json_message)
 
