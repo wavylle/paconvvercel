@@ -183,7 +183,9 @@ def storeEmbeddigsPinecone():
 
     content = content.replace('\r', '')
     if "\n\n" in content:
+        print("Here...")
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0, separators=["\n\n"])
+        print("Splitting text block 1...")
     else:
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
     # text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
