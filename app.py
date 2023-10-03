@@ -21,7 +21,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from collections import namedtuple
 import os
 from dotenv import load_dotenv
-
+# 
 # Load environment variables from .env file
 load_dotenv()
 
