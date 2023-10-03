@@ -178,16 +178,16 @@ def storeEmbeddigsPinecone():
     # try:
     document = read_text_file(file_url)
     response = requests.get(file_url)
-    if response.status_code == 200:
-        # Extract the content as a single string
-        content = response.text.strip()
+    # Extract the content as a single string
+    content = response.text.strip()
 
-        content = content.replace('\r', '')
+    content = content.replace('\r', '')
     if "\n\n" in content:
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0, separators=["\n\n"])
     else:
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
     # text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+    print(text_splitter)
     texts = text_splitter.split_documents(document)
 
     embeddings = OpenAIEmbeddings(openai_api_key=os.environ.get("OPENAI_API_KEY"))
