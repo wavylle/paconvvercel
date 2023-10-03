@@ -177,7 +177,13 @@ def storeEmbeddigsPinecone():
 
     try:
         document = read_text_file(file_url)
-        if "\n\n" in text_string:
+        response = requests.get(file_url)
+        if response.status_code == 200:
+            # Extract the content as a single string
+            content = response.text.strip()
+    
+            content = content.replace('\r', '')
+        if "\n\n" in content:
             text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0, separators=["\n\n"])
         else:
             text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
@@ -190,7 +196,7 @@ def storeEmbeddigsPinecone():
                                         namespace=embedding_map)
 
         json_message = {"status": "success"}
-    except:
+    except Exception as e:
         json_message = {"status": "failed"}
 
     return jsonify(json_message)
