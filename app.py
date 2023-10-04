@@ -185,12 +185,14 @@ def storeEmbeddigsPinecone():
     if "\n\n" in content:
         print("Here...")
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0, separators=["\n\n"])
+        texts = text_splitter.split_documents(document)
         print("Splitting text block 1...")
     else:
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+        texts = text_splitter.split_documents(document)
     # text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-    print(text_splitter)
-    texts = text_splitter.split_documents(document)
+    # print(text_splitter)
+    # texts = text_splitter.split_documents(document)
 
     embeddings = OpenAIEmbeddings(openai_api_key=os.environ.get("OPENAI_API_KEY"))
 
