@@ -175,33 +175,33 @@ def storeEmbeddigsPinecone():
     file_url = data.get("file_url")
     embedding_map = data.get("embedding_map")
 
-    # try:
-    document = read_text_file(file_url)
-    response = requests.get(file_url)
-    # Extract the content as a single string
-    content = response.text.strip()
-
-    content = content.replace('\r', '')
-    if "\n\n" in content:
-        print("Here...")
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0, separators=["\n\n"])
-        texts = text_splitter.split_documents(document)
-        print("Splitting text block 1...")
-    else:
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-        texts = text_splitter.split_documents(document)
-    # text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-    # print(text_splitter)
-    # texts = text_splitter.split_documents(document)
-
-    embeddings = OpenAIEmbeddings(openai_api_key=os.environ.get("OPENAI_API_KEY"))
-
-    doc_store = Pinecone.from_texts([d.page_content for d in texts], embeddings, index_name=INDEX_NAME,
-                                    namespace=embedding_map)
-
-    json_message = {"status": "success"}
-    # except Exception as e:
-    #     json_message = {"status": "failed"}
+    try:
+        document = read_text_file(file_url)
+        response = requests.get(file_url)
+        # Extract the content as a single string
+        content = response.text.strip()
+    
+        content = content.replace('\r', '')
+        if "\n\n" in content:
+            print("Here...")
+            text_splitter = RecursiveCharacterTextSplitter(chunk_overlap=0, separators=["\n\n"])
+            texts = text_splitter.split_documents(document)
+            print("Splitting text block 1...")
+        else:
+            text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+            texts = text_splitter.split_documents(document)
+        # text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+        # print(text_splitter)
+        # texts = text_splitter.split_documents(document)
+    
+        embeddings = OpenAIEmbeddings(openai_api_key=os.environ.get("OPENAI_API_KEY"))
+    
+        doc_store = Pinecone.from_texts([d.page_content for d in texts], embeddings, index_name=INDEX_NAME,
+                                        namespace=embedding_map)
+    
+        json_message = {"status": "success"}
+    except Exception as e:
+        json_message = {"status": "failed"}
 
     return jsonify(json_message)
 
