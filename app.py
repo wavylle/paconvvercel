@@ -231,6 +231,23 @@ def responseFromPinecone():
         llm = OpenAI(temperature=0, openai_api_key=os.environ.get("OPENAI_API_KEY"))
         qa_chain = load_qa_chain(llm, chain_type="stuff")
         docs = doc_store.similarity_search(query)
+        combined_text = '\n\n'.join(doc.page_content for doc in docs)
+
+        prompt_template = """
+        I want you to act as a support agent. Your name is "AI Assistant". You will provide me with answers from the given info. 
+        If the answer is not included, say exactly "Hmm, I am not sure." and stop after that. 
+        Refuse to answer any question not about the info. Never break character.
+        """
+
+        prompt = PromptTemplate(
+        input_variables=["information", "question"],
+        template=prompt_template,
+        )
+
+        llm = OpenAI(temperature=0, model_name="gpt-3.5-turbo", openai_api_key=os.environ.get("OPENAI_API_KEY"))
+        chain = LLMChain(llm=llm, prompt=prompt)
+        result1 = chain.run(information=combined_text, question=question)
+        
         result = qa_chain.run(input_documents=docs, question=query)
 
         doc_dict = []
@@ -240,7 +257,7 @@ def responseFromPinecone():
 
         print("Doc Dict: ", doc_dict)
 
-        json_message = {"status": "success", "result": result, "docs": doc_dict}
+        json_message = {"status": "success", "result": result, "docs": doc_dict, "result": result1}
 
     except:
         json_message = {"status": "failed"}
