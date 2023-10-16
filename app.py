@@ -263,7 +263,7 @@ def responseFromPinecone():
 
         print("Doc Dict: ", doc_dict)
 
-        json_message = {"status": "success", "result": result, "docs": doc_dict, "result": result1}
+        json_message = {"status": "success", "result": result, "docs": doc_dict, "result1": result1}
 
     except Exception as e:
         json_message = {"status": "failed", "error": str(e)}
