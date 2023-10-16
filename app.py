@@ -8,6 +8,7 @@ import requests
 from langchain.document_loaders import TextLoader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.prompts import PromptTemplate
 from langchain.vectorstores import Pinecone
 from langchain import VectorDBQA, OpenAI
 from langchain.chains import RetrievalQA, RetrievalQAWithSourcesChain
