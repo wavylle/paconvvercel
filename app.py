@@ -235,9 +235,13 @@ def responseFromPinecone():
         combined_text = '\n\n'.join(doc.page_content for doc in docs)
 
         prompt_template = """
-        I want you to act as a support agent. Your name is "AI Assistant". You will provide me with answers from the given info. 
-        If the answer is not included, say exactly "Hmm, I am not sure." and stop after that. 
+        I want you to act as a support agent. Your name is "AI Assistant". You will provide me with answers from the given information. 
+        If the answer is not included in the information, say exactly "Hmm, I am not sure." and stop after that. 
         Refuse to answer any question not about the info. Never break character.
+
+        The information: '{information}'
+
+        My question: '{question}'
         """
 
         prompt = PromptTemplate(
@@ -247,7 +251,7 @@ def responseFromPinecone():
 
         llm = OpenAI(temperature=0, model_name="gpt-3.5-turbo", openai_api_key=os.environ.get("OPENAI_API_KEY"))
         chain = LLMChain(llm=llm, prompt=prompt)
-        result1 = chain.run(information=combined_text, question=question)
+        result1 = chain.run(information=combined_text, question=query)
         
         result = qa_chain.run(input_documents=docs, question=query)
 
