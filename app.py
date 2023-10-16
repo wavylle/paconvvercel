@@ -10,6 +10,7 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain.vectorstores import Pinecone
+from langchain.chains import LLMChain
 from langchain import VectorDBQA, OpenAI
 from langchain.chains import RetrievalQA, RetrievalQAWithSourcesChain
 import pinecone
