@@ -235,15 +235,8 @@ def responseFromPinecone():
         docs = doc_store.similarity_search(query)
         combined_text = '\n\n'.join(doc.page_content for doc in docs)
 
-        prompt_template = """
-        I want you to act as a support agent. Your name is "AI Assistant". You will provide me with answers from the given information. 
-        If the answer is not included in the information, say exactly "Hmm, I am not sure." and stop after that. 
-        Refuse to answer any question not about the info. Never break character.
-
-        The information: '{information}'
-
-        My question: '{question}'
-        """
+        prompt_template = """Given this information: {information}
+                            Assist me with this: {question}"""
 
         prompt = PromptTemplate(
         input_variables=["information", "question"],
