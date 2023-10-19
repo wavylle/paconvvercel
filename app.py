@@ -12,6 +12,7 @@ from langchain.prompts import PromptTemplate
 from langchain.vectorstores import Pinecone
 from langchain.chains import LLMChain
 from langchain import VectorDBQA, OpenAI
+from langchain.chat_models import ChatOpenAI
 from langchain.chains import RetrievalQA, RetrievalQAWithSourcesChain
 import pinecone
 from langchain.chains.summarize import load_summarize_chain
@@ -243,10 +244,10 @@ def responseFromPinecone():
         template=prompt_template,
         )
 
-        llm = OpenAI(temperature=0, model_name="gpt-3.5-turbo", openai_api_key=os.environ.get("OPENAI_API_KEY"))
-        chain = LLMChain(llm=llm, prompt=prompt)
-        result1 = chain.run(information=combined_text, question=query)
-        
+        # llm = OpenAI(temperature=0, model_name="gpt-3.5-turbo", openai_api_key=os.environ.get("OPENAI_API_KEY"))
+        # chain = LLMChain(llm=llm, prompt=prompt)
+        # result1 = chain.run(information=combined_text, question=query)
+        result1 = ""
         result = qa_chain.run(input_documents=docs, question=query)
 
         doc_dict = []
