@@ -244,10 +244,10 @@ def responseFromPinecone():
         template=prompt_template,
         )
 
-        # llm = OpenAI(temperature=0, model_name="gpt-3.5-turbo", openai_api_key=os.environ.get("OPENAI_API_KEY"))
-        # chain = LLMChain(llm=llm, prompt=prompt)
-        # result1 = chain.run(information=combined_text, question=query)
-        result1 = ""
+        llm = OpenAI(temperature=0, model_name="gpt-3.5-turbo", openai_api_key=os.environ.get("OPENAI_API_KEY"))
+        chain = LLMChain(llm=llm, prompt=prompt)
+        result1 = chain.run(information=combined_text, question=query)
+        # result1 = ""
         result = qa_chain.run(input_documents=docs, question=query)
 
         doc_dict = []
