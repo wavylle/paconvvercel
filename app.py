@@ -221,9 +221,9 @@ def responseFromPinecone():
     embedding_map = data.get("embedding_map")
 
     try:
-        document = read_text_file(file_url)
-        text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-        texts = text_splitter.split_documents(document)
+        # document = read_text_file(file_url)
+        # text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+        # texts = text_splitter.split_documents(document)
 
         embeddings = OpenAIEmbeddings(openai_api_key=os.environ.get("OPENAI_API_KEY"))
 
@@ -231,8 +231,8 @@ def responseFromPinecone():
 
         query = question
 
-        llm = OpenAI(temperature=0, openai_api_key=os.environ.get("OPENAI_API_KEY"))
-        qa_chain = load_qa_chain(llm, chain_type="stuff")
+        # llm = OpenAI(temperature=0, openai_api_key=os.environ.get("OPENAI_API_KEY"))
+        # qa_chain = load_qa_chain(llm, chain_type="stuff")
         docs = doc_store.similarity_search(query)
         combined_text = '\n\n'.join(doc.page_content for doc in docs)
 
@@ -248,7 +248,8 @@ def responseFromPinecone():
         chain = LLMChain(llm=llm, prompt=prompt)
         result1 = chain.run(information=combined_text, question=query)
         # result1 = ""
-        result = qa_chain.run(input_documents=docs, question=query)
+        result = ""
+        # result = qa_chain.run(input_documents=docs, question=query)
 
         doc_dict = []
 
