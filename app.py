@@ -253,6 +253,8 @@ def responseFromPinecone():
 
         doc_dict = []
 
+        print("Before the loop")
+
         for e, x in enumerate(docs):
             doc_dict.append({"page_content": x.page_content, "metadata": x.metadata})
 
