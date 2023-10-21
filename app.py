@@ -263,6 +263,7 @@ def responseFromPinecone():
         json_message = {"status": "success", "result": result, "docs": doc_dict, "result1": result1}
 
     except Exception as e:
+        print("There's an error!!")
         json_message = {"status": "failed", "error": str(e)}
 
     return jsonify(json_message)
