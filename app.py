@@ -204,7 +204,7 @@ def storeEmbeddigsPinecone():
     
         json_message = {"status": "success"}
     except Exception as e:
-        json_message = {"status": "failed"}
+        json_message = {"status": "failed", "error": str(e)}
 
     return jsonify(json_message)
 
