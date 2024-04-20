@@ -25,7 +25,6 @@ from collections import namedtuple
 import os
 from dotenv import load_dotenv
 import sys
-sys.setrecursionlimit(1500)
 # Load environment variables from .env file
 load_dotenv()
 
