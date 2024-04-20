@@ -24,6 +24,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from collections import namedtuple
 import os
 from dotenv import load_dotenv
+import sys
 
 # Load environment variables from .env file
 load_dotenv()
@@ -187,6 +188,7 @@ def storeEmbeddigsPinecone():
         content = content.replace('\r', '')
         if "\n\n" in content:
             print("Here...")
+            print(sys.getrecursionlimit())
             text_splitter = RecursiveCharacterTextSplitter(chunk_overlap=0, separators=["\n\n"])
             texts = text_splitter.split_documents(document)
             print("Splitting text block 1...")
