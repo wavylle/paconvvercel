@@ -172,6 +172,11 @@ def getanswer():
 def storeEmbeddigsPinecone():
     data = request.get_json()
 
+    openai_api_key = os.environ.get("OPENAI_API_KEY")
+
+    if "openai_api_key" in data:
+        openai_api_key = openai_api_key
+
     print("API KEY: ", os.environ.get("OPENAI_API_KEY"))
 
     # Retrieve values
@@ -214,7 +219,12 @@ def storeEmbeddigsPinecone():
 def responseFromPinecone():
     data = request.get_json()
 
-    print("API KEY: ", os.environ.get("OPENAI_API_KEY"))
+    openai_api_key = os.environ.get("OPENAI_API_KEY")
+
+    if "openai_api_key" in data:
+        openai_api_key = openai_api_key
+
+    print("API KEY: ", openai_api_key)
 
     # Retrieve values
     question = data.get("question")
@@ -226,7 +236,7 @@ def responseFromPinecone():
         # text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
         # texts = text_splitter.split_documents(document)
 
-        embeddings = OpenAIEmbeddings(openai_api_key=os.environ.get("OPENAI_API_KEY"))
+        embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
 
         doc_store = Pinecone.from_existing_index(index_name=INDEX_NAME, embedding=embeddings, namespace=embedding_map)
 
@@ -245,7 +255,7 @@ def responseFromPinecone():
         template=prompt_template,
         )
 
-        llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo", openai_api_key=os.environ.get("OPENAI_API_KEY"))
+        llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo", openai_api_key=openai_api_key)
         chain = LLMChain(llm=llm, prompt=prompt)
         result1 = chain.run(information=combined_text, question=query)
         # result1 = ""
