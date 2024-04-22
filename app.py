@@ -174,10 +174,12 @@ def storeEmbeddigsPinecone():
 
     openai_api_key = os.environ.get("OPENAI_API_KEY")
 
-    if "openai_api_key" in data:
-        openai_api_key = openai_api_key
+    openai_api_key_rec = data.get('openai_api_key')
 
-    print("API KEY: ", os.environ.get("OPENAI_API_KEY"))
+    if "openai_api_key_rec" is not None:
+        openai_api_key = openai_api_key_rec
+
+    print("API KEY: ", openai_api_key)
 
     # Retrieve values
     file_url = data.get("file_url")
@@ -221,8 +223,10 @@ def responseFromPinecone():
 
     openai_api_key = os.environ.get("OPENAI_API_KEY")
 
-    if "openai_api_key" in data:
-        openai_api_key = openai_api_key
+    openai_api_key_rec = data.get('openai_api_key')
+
+    if "openai_api_key_rec" is not None:
+        openai_api_key = openai_api_key_rec
 
     print("API KEY: ", openai_api_key)
 
